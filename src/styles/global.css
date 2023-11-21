@@ -1,0 +1,17 @@
+.primary-button {
+  min-width: 8rem;
+
+  height: 3rem;
+
+  border-radius: 1rem;
+  border: 1px solid #0a0a0a;
+  padding: 0.5rem;
+
+  color: #0a0a0a;
+  transition: all 0.1s ease-in-out;
+}
+
+.primary-button:hover {
+  color: #f8f8f8;
+  background-color: #0a0a0a;
+}
