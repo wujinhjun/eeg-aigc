@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function HomePage() {
   return (
-    <div className={`${style['homepage-container']}`}>
+    <div className={'page-container'}>
       <header className={`${style['homepage-header']}`}>
         <span className={`${style['homepage-header-left-logo']}`}>
           EEG-STUDIO
