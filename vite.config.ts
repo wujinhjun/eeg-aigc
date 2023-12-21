@@ -12,5 +12,13 @@ export default defineConfig({
       '@': path.join(__dirname, 'src')
     }
   },
-  base: '/eeg-aigc/'
+  base: '/eeg-aigc/',
+  server: {
+    proxy: {
+      '/api': {
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        target: 'http://localhost:3000'
+      }
+    }
+  }
 });
