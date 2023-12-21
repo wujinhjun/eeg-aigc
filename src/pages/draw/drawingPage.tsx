@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Switch } from '@headlessui/react';
 import { useLocation, useParams, Link } from 'react-router-dom';
-import clsx from 'clsx';
+
 import {
   ArrowSmallLeftIcon,
   ArrowSmallRightIcon
@@ -20,14 +20,16 @@ import Loading from '@/components/base/loading';
 import UploadPainting from '@/components/application/uploadPainting';
 import IntroductionStory from '@/components/application/introductonStory';
 
+import compressImage from '@/utils/compressImage';
+import translateDataByEEG from '@/utils/translateDataByEEG';
+import publicService from '@/service/publicService';
+
 import {
   ChatRecordType,
   ChatRoleEnum,
   ChatTypeEnum,
   StoryType
 } from '@/utils/types';
-import compressImage from '@/utils/compressImage';
-import translateDataByEEG from '@/utils/translateDataByEEG';
 
 import style from '@/styles/drawingPage.module.css';
 
@@ -37,8 +39,6 @@ const API_KEY = import.meta.env.VITE_OPEN_AI_API_KEY;
 
 class RetriableError extends Error {}
 class FatalError extends Error {}
-
-const animationDurationTime = 500;
 
 const initialChatData: ChatRecordType[] = [
   {
@@ -60,64 +60,6 @@ export default function DrawingPage() {
   // 当前的剧本内容
   const [currentStory, setCurrentStory] = useState<StoryType>();
 
-  /**
-   * 轮播图
-   *
-   * 当前的index
-   * slideTo的封装
-   */
-  // 轮播图
-  // index
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [previousSectionIndex, setPreviousSectionIndex] =
-    useState<number>(currentSectionIndex);
-  // 是否顺向
-  const [slideDirection, setSlideDirection] = useState<
-    'direction' | 'negative'
-  >('direction');
-  // 是否正在切换
-  const [isSwitching, setIsSwitching] = useState(false);
-  // 动画的计时器
-  const animationTimerRef = useRef<number>(0);
-
-  const sectionNumber = useMemo(() => {
-    return currentStory ? currentStory.description.length : 0;
-  }, [currentStory]);
-
-  const modTheIndex = (index: number) => {
-    return (index + sectionNumber) % sectionNumber;
-  };
-
-  const slideTo = (index: number) => {
-    if (!isSwitching && index !== currentSectionIndex) {
-      const targetIndex = modTheIndex(index);
-      setIsSwitching(true);
-
-      setSlideDirection(
-        targetIndex > currentSectionIndex ? 'direction' : 'negative'
-      );
-      setCurrentSectionIndex(targetIndex);
-      setPreviousSectionIndex(currentSectionIndex);
-
-      animationTimerRef.current = setTimeout(() => {
-        setIsSwitching(false);
-        animationTimerRef.current = 0;
-      }, animationDurationTime);
-    }
-  };
-
-  const slideToNext = () => {
-    slideTo(currentSectionIndex + 1);
-  };
-
-  const slideToPrev = () => {
-    if (currentSectionIndex === 0) {
-      toast.error('已经是第一段剧情了！');
-      return;
-    }
-    slideTo(currentSectionIndex - 1);
-  };
-
   // 是否处于介绍阶段
   const [isIntroductionStoryProcessing, setIsIntroductionStoryProcessing] =
     useState(true);
@@ -125,6 +67,8 @@ export default function DrawingPage() {
   // 绘画阶段
   // 绘画阶段：是否只显示图片
   const [isOnlyDisplayImg, setIsOnlyDisplayImg] = useState(false);
+
+  const [isUploadingHistory, setIsUploadingHistory] = useState(false);
 
   // 是否正在绘图
   const [isCreatingPainting, setIsCreatingPainting] = useState(false);
@@ -197,6 +141,11 @@ export default function DrawingPage() {
 
   // 设置绘图记录
   const handleUploadImageForPaintingList = (paint: string) => {
+    if (paint.length === 0) {
+      toast.error('请先上传图片');
+      return;
+    }
+
     // 机器最后一条消息的index
     const lastRobotIndex = chatRecordList
       .map((obj) => obj.role)
@@ -223,7 +172,6 @@ export default function DrawingPage() {
 
     handleAddChatRecordList(ChatTypeEnum.img, ChatRoleEnum.user, paint);
     setCurrentSketch(paint);
-    toast.success('上传成功');
 
     setTimeout(() => {
       handleAddChatRecordList(
@@ -476,21 +424,95 @@ export default function DrawingPage() {
 
   //TODO 上传此刻的记录
   const handleConfirmThisStory = () => {
-    const id = nanoid();
-    const name = params.id;
+    const handleUploadPaintingHistory = async () => {
+      const len = currentStory ? currentStory.tips.length - 1 : 0;
+      //   if (tipsIndex < len) {
+      //     toast.error('还未完成全部环节');
+      //     return;
+      //   }
 
-    const imgs = chatRecordList.filter(
-      (item) => item.type === ChatTypeEnum.img
-    );
+      const name = params.id;
 
-    const historyData = {
-      id: nanoid(),
-      name: params.id,
-      date: new Date().getTime(),
-      theme: params.id,
-      chatRecord: chatRecordList,
-      imgs
+      const imgsList = chatRecordList
+        .filter((item) => item.type === ChatTypeEnum.img)
+        .map((item) => {
+          return {
+            content: item.content,
+            imgType: item.imgType
+          };
+        });
+
+      const promises = imgsList.map((item, index) => {
+        return publicService.uploadImageToGithubWithRetry(
+          `${name}-${index}`,
+          item.imgType,
+          item.content
+        );
+      });
+
+      const imgs = await Promise.all(promises)
+        .then((res) => {
+          console.log(res);
+          return res;
+        })
+        .then((res) => {
+          return res.map((item, index) => ({
+            imgUrl: item,
+            imgType: imgsList[index].imgType
+          }));
+        })
+        .catch((err) => {
+          console.error(err);
+          return [] as Array<{
+            imgUrl: string;
+            imgType: '' | 'sketch' | 'painting';
+          }>;
+        });
+
+      let index = 0;
+
+      const chatRecord = [...chatRecordList].map((item) => {
+        if (item.type === ChatTypeEnum.img) {
+          item.content = imgs[index].imgUrl;
+          index++;
+        }
+        return item;
+      });
+
+      const historyData = {
+        id: nanoid(),
+        name: params.id,
+        date: new Date().getTime(),
+        theme: params.id,
+        chatRecord: chatRecord,
+        imgs
+      };
+
+      console.log(historyData);
+
+      await fetch('/api/eeg-story/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(historyData)
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     };
+
+    toast.promise(handleUploadPaintingHistory(), {
+      loading: '上传中',
+      success: '上传成功',
+      error: '上传失败'
+    });
   };
 
   useEffect(() => {
@@ -783,8 +805,10 @@ export default function DrawingPage() {
         isMaskClickClosable={false}
       >
         <div>是否结束绘画，并保存绘画记录？</div>
-        <div className="flex justify-between">
-          <Button category="green">保存并退出</Button>
+        <div className="flex justify-between pt-4">
+          <Button category="green" onClick={handleConfirmThisStory}>
+            保存并退出
+          </Button>
           <Button
             category="green"
             onClick={() => {
