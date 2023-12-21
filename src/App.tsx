@@ -8,8 +8,10 @@ import HomePage from '@/pages/homePage';
 import { Toaster } from 'react-hot-toast';
 
 import HistoryPage from '@/pages/historyPage';
-import DrawingPage from '@/pages/drawingPage';
+import IntroductionPage from '@/pages/draw/introductionPage';
+import DrawingPage from '@/pages/draw/drawingPage';
 import ConfigurationPage from '@/pages/configurationPage';
+import StoryConfigPage from './pages/draw/storyConfigPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -21,7 +23,12 @@ function App() {
       path: '/history',
       element: <HistoryPage />
     },
-    { path: '/drawing', element: <DrawingPage /> },
+    {
+      path: '/drawing',
+      element: <IntroductionPage />
+    },
+    { path: '/drawing/story/:id', element: <DrawingPage /> },
+    { path: '/drawing/config', element: <StoryConfigPage /> },
     { path: '/configuration', element: <ConfigurationPage /> }
   ]);
 
