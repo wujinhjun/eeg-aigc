@@ -442,10 +442,10 @@ export default function DrawingPage() {
   const handleConfirmThisStory = () => {
     const handleUploadPaintingHistory = async () => {
       const len = currentStory ? currentStory.tips.length - 1 : 0;
-      //   if (tipsIndex < len) {
-      //     toast.error('还未完成全部环节');
-      //     return;
-      //   }
+      if (tipsIndex < len) {
+        toast.error('还未完成全部环节');
+        return;
+      }
 
       const name = params.id;
 
