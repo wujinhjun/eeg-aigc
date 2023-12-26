@@ -21,6 +21,7 @@ import UploadPainting from '@/components/application/uploadPainting';
 import IntroductionStory from '@/components/application/introductonStory';
 
 import compressImage from '@/utils/compressImage';
+import filterTargetDataByEEG from '@/utils/filterTargetDataByEEG';
 import translateDataByEEG from '@/utils/translateDataByEEG';
 import publicService from '@/service/publicService';
 
