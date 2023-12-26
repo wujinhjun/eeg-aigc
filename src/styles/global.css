@@ -3,33 +3,55 @@
   --max-width: 80rem;
 
   /* 颜色 */
+  --main-ui-color: #4abda2;
+
+  --main-gray-color: #fafafa;
+  --main-green-color: var(--main-ui-color);
+  --main-light-green-color: #eaf9f5;
+  --main-blue-color: #53b4eb;
+  --main-purple-color: #8964f1;
+  --main-red-color: #ed8e9f;
 
   /* 文字 */
 }
 
+#root {
+  background-color: var(--main-light-green-color);
+}
+
 .page-container {
-  height: 100vh;
-  width: 100vw;
   max-width: var(--max-width);
+  min-height: 100vh;
 
   margin: 0 auto;
   padding-block: 1rem;
+
+  background-color: var(--main-light-green-color);
 }
 
 .primary-button {
-  min-width: 8rem;
+  --button-color-border: var(--main-green-color);
+  --button-color-background: #fcfcfc;
+  --button-color-text: #111111;
 
+  min-width: 8rem;
   height: 3rem;
 
   border-radius: 1rem;
-  border: 1px solid #0a0a0a;
+  border: 2px solid var(--button-color-border);
   padding: 0.5rem;
+  color: var(--button-color-text);
+  background-color: var(--button-color-background);
 
-  color: #0a0a0a;
   transition: all 0.1s ease-in-out;
 }
 
 .primary-button:hover {
-  color: #f8f8f8;
-  background-color: #0a0a0a;
+  color: var(--button-color-background);
+  background-color: var(--button-color-border);
+}
+
+.main-ui-border {
+  border: 1px solid #d9d9d9;
+  border-radius: 1rem;
 }
