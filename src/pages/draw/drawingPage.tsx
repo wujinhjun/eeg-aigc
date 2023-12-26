@@ -508,11 +508,15 @@ export default function DrawingPage() {
         });
     };
 
-    toast.promise(handleUploadPaintingHistory(), {
-      loading: '上传中',
-      success: '上传成功',
-      error: '上传失败'
-    });
+    toast
+      .promise(handleUploadPaintingHistory(), {
+        loading: '上传中',
+        success: '上传成功',
+        error: '上传失败'
+      })
+      .then(() => {
+        window.location.href = '/drawing';
+      });
   };
 
   useEffect(() => {
