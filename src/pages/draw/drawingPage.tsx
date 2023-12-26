@@ -36,6 +36,10 @@ import {
 import style from '@/styles/drawingPage.module.css';
 
 import chatRole from '@/assets/cartoon/chat.svg';
+import chatRole1 from '@/assets/cartoon/chat1.svg';
+import chatRole2 from '@/assets/cartoon/chat2.svg';
+
+const chatRoleList = [chatRole, chatRole1, chatRole2];
 
 const API_KEY = import.meta.env.VITE_OPEN_AI_API_KEY;
 
@@ -130,6 +134,8 @@ export default function DrawingPage() {
   // 当前的prompt
   const [currentPaintingPrompt, setCurrentPaintingPrompt] =
     useState<string>('');
+  // 当前的引导人
+  const [chatRoleIndex, setChatRoleIndex] = useState(0);
 
   // 关闭上传图片的对话框
   const handleCloseUploadDialog = () => {
@@ -332,6 +338,14 @@ export default function DrawingPage() {
     }
 
     setChatRecordList((prev) => [...prev, record]);
+
+    let randomIndex = Math.floor(Math.random() * 3);
+
+    while (randomIndex === chatRoleIndex) {
+      randomIndex = Math.floor(Math.random() * 3);
+    }
+
+    setChatRoleIndex(randomIndex);
 
     return chatRecordList.length;
   };
