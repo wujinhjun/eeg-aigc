@@ -13,6 +13,7 @@ import {
 import { nanoid } from 'nanoid';
 import { produce } from 'immer';
 import toast from 'react-hot-toast';
+import { useThrottleFn } from 'ahooks';
 
 import Button from '@/components/base/button';
 import Dialog from '@/components/base/dialog';
@@ -25,6 +26,8 @@ import compressImage from '@/utils/compressImage';
 import filterTargetDataByEEG from '@/utils/filterTargetDataByEEG';
 import translateDataByEEG from '@/utils/translateDataByEEG';
 import publicService from '@/service/publicService';
+
+import useResizeObserver from '@/hooks/useResizeObserver';
 
 import {
   ChatRecordType,
@@ -68,7 +71,7 @@ export default function DrawingPage() {
 
   // 是否处于介绍阶段
   const [isIntroductionStoryProcessing, setIsIntroductionStoryProcessing] =
-    useState(true);
+    useState(false);
 
   // 绘画阶段
   // 绘画阶段：是否只显示图片
@@ -566,6 +569,120 @@ export default function DrawingPage() {
     };
   }, []);
 
+  const chatRecordListAreaRef = useRef<HTMLElement | null>(null);
+  const journalListPictureRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const element = journalListPictureRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    setTimeout(() => {
+      element.scrollTo({
+        behavior: 'smooth',
+        top: 0,
+        left: element.scrollWidth
+      });
+    }, 500);
+  }, [paintingListMemo]);
+
+  useEffect(() => {
+    const element = chatRecordListAreaRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    element.scrollTo({
+      behavior: 'smooth',
+      top: element.scrollHeight,
+      left: 0
+    });
+  }, [chatRecordList]);
+
+  //   //   const chatRecordListAreaRef = useRef<HTMLElement | null>(null);
+  //   const scrollChatListToBottom = () => {
+  //     if (!chatRecordListAreaRef.current) {
+  //       return;
+  //     }
+
+  //     handleScrollElementToEnd(chatRecordListAreaRef.current, 'y');
+  //   };
+
+  //   const scrollJournalListToRight = () => {
+  //     if (!journalListPictureRef.current) {
+  //       return;
+  //     }
+
+  //     handleScrollElementToEnd(journalListPictureRef.current, 'x');
+  //   };
+
+  //   const { run: scrollChatListBottomThrottle } = useThrottleFn(
+  //     scrollChatListToBottom,
+  //     { wait: 1000 }
+  //   );
+
+  //   const { run: scrollJournalListToRightThrottle } = useThrottleFn(
+  //     scrollJournalListToRight,
+  //     { wait: 1000 }
+  //   );
+
+  //   const { ref: chatRecordListAreaRef, dimensions: chatArea } =
+  //     useResizeObserver<HTMLElement>();
+
+  //   useEffect(() => {
+  //     console.log(chatArea);
+
+  //     // if (!chatRecordListAreaRef.current) {
+  //     //   return;
+  //     // }
+  //     // const element = chatRecordListAreaRef.current;
+
+  //     // const { scrollHeight, clientHeight } = element;
+
+  //     // element.scrollTo({ behavior: 'smooth', top: scrollHeight, left: 0 });
+  //     // const { clientHeight, clientWidth } = chatRecordListAreaRef.current;
+  //   }, [chatArea]);
+  // scrollChatListBottomThrottle
+
+  //   const { ref: journalListPictureRef } = useResizeObserver(
+  //     scrollJournalListToRightThrottle
+  //   );
+
+  //   const handleScrollElementToEnd = (
+  //     element: HTMLElement,
+  //     direction: 'x' | 'y' | 'all'
+  //   ) => {
+  //     const options: ScrollToOptions = {
+  //       behavior: 'smooth'
+  //     };
+  //     switch (direction) {
+  //       case 'x':
+  //         options.left = element.scrollWidth;
+  //         break;
+  //       case 'y':
+  //         options.top = element.scrollHeight;
+  //         break;
+  //       case 'all':
+  //         options.left = element.scrollWidth;
+  //         options.top = element.scrollHeight;
+  //         break;
+  //       default:
+  //         break;
+  //     }
+
+  //     console.log(element, options);
+
+  //     // element.scrollTo(options);
+  //     element.scrollTo({
+  //       behavior: 'smooth',
+  //       left: element.scrollWidth,
+  //       top: element.scrollHeight
+  //     });
+  //   };
+
   // 渲染聊天记录
   const renderChatRecordCard = (item: ChatRecordType) => {
     if (item.type === ChatTypeEnum.text) {
@@ -657,16 +774,17 @@ export default function DrawingPage() {
                     <ArrowSmallRightIcon className="w-5" />
                   </div>
                 </div>
-                <div
+                <section
                   className={
                     'flex mt-1 h-24 overflow-hidden gap-3 overflow-x-scroll ' +
                     `${style['drawing-content-list']}`
                   }
+                  ref={journalListPictureRef}
                 >
                   {paintingListMemo.map((item, index) => {
                     return <img src={item.content} alt="" key={index} />;
                   })}
-                </div>
+                </section>
               </div>
 
               <div className="ml-4">
@@ -742,7 +860,10 @@ export default function DrawingPage() {
 
                 {/* 聊天框 */}
                 <section className={`${style['drawing-chat-area-wrapper']}`}>
-                  <section className={`${style['drawing-chat-area']}`}>
+                  <section
+                    className={`${style['drawing-chat-area']}`}
+                    ref={chatRecordListAreaRef}
+                  >
                     {filteredChatRecordList.map((item) => {
                       return renderChatRecordCard(item);
                     })}
