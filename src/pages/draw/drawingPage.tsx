@@ -543,7 +543,8 @@ export default function DrawingPage() {
         const result = translateDataByEEG(data);
         const targetStatusEeg = filterTargetDataByEEG(result);
 
-        targetStatusEeg.length > 0 && setCurrentEegStatus(targetStatusEeg);
+        targetStatusEeg.status.length > 0 &&
+          setCurrentEegStatus(targetStatusEeg.status);
       } catch {
         console.log(e.data);
       }

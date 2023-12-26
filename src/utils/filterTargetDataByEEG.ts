@@ -20,5 +20,5 @@ export default function filterTargetDataByEEG(
     }
   }
 
-  return dict[currentStatus];
+  return { status: dict[currentStatus], value: currentValue };
 }
