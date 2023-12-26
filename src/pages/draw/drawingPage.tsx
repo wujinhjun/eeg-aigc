@@ -695,7 +695,7 @@ export default function DrawingPage() {
               </Button>
             </section>
 
-            <div className={`${style['drawing-page-chat-page']} p-5`}>
+            <div className={`${style['drawing-page-chat-page']} p-5 pb-2`}>
               <div className="flex flex-col h-full">
                 <div className={`${style['drawing-chat-top']} mb-4`}>
                   <span className="mr-auto">交流记录</span>
