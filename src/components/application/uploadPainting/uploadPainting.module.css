@@ -1,0 +1,70 @@
+.main-content-container {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 1rem;
+
+  height: calc(100% - 5rem);
+}
+
+.upload-local-container {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.upload-local-label {
+  border: 2px dashed #3f91fc;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 1rem;
+
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-local-label > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 2rem;
+}
+
+.upload-local-label:has(img) {
+  background-color: rgb(207, 207, 207);
+}
+
+.upload-local-label:hover {
+  background-color: #3f91fc;
+  color: #fff;
+  border-color: #fff;
+
+  font-size: 1.5rem;
+}
+
+.upload-realtime-container {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+.preview-area {
+  height: calc(100% - 14rem);
+
+  display: flex;
+  justify-content: center;
+}
+
+.preview-area > img {
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-area > video {
+  width: auto;
+  height: auto;
+}
+
+.preview-area-image {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+}
