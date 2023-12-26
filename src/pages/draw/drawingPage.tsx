@@ -696,8 +696,11 @@ export default function DrawingPage() {
           <section className={`${style['drawing-page-right-panel']}`}>
             {/* 顶部 */}
             <section className={`${style['drawing-page-right-header']}`}>
-              <div className="mr-auto">
-                当前状态 {currentEegStatus || '不详'}
+              <div className="mr-auto flex justify-center items-center">
+                当前状态
+                <div className="bg-[#D4F7FF] text-[#1AA6F5] font-black ml-2 rounded-3xl px-8 py-2">
+                  {currentEegStatus || '不详'}
+                </div>
               </div>
               <Button
                 category="red"
