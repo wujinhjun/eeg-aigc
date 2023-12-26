@@ -533,7 +533,6 @@ export default function DrawingPage() {
 
     const socket = new WebSocket('ws://localhost:3001');
 
-    // socket.send('hello');
     socket.onopen = () => {
       socket.send('hello');
     };
@@ -549,17 +548,7 @@ export default function DrawingPage() {
       } catch {
         console.log(e.data);
       }
-      // "attention.isActive","attention",
-      // "eng.isActive","eng",
-      // "exc.isActive","exc","lex",
-      // "str.isActive","str",
-      // "rel.isActive","rel",
-      // "int.isActive","int"
     };
-
-    // return () => {
-    //   socket.close();
-    // };
   }, []);
 
   // 渲染聊天记录
