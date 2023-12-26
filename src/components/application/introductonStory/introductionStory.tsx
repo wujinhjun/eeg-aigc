@@ -8,6 +8,9 @@ import Button from '@/components/base/button';
 import { StoryType } from '@/utils/types';
 
 import chatRole from '@/assets/cartoon/chat.svg';
+import chatRole1 from '@/assets/cartoon/chat1.svg';
+import chatRole2 from '@/assets/cartoon/chat2.svg';
+
 const animationDurationTime = 500;
 
 interface Props {
@@ -15,6 +18,8 @@ interface Props {
   handleIntroductionStoryProcessing: (isProcessing: boolean) => void;
   currentStory: StoryType | undefined;
 }
+
+const chatRoleList = [chatRole, chatRole1, chatRole2];
 
 export default function IntroductionStory({
   isIntroductionStoryProcessing,
@@ -39,6 +44,8 @@ export default function IntroductionStory({
     return currentStory ? currentStory.description.length : 0;
   }, [currentStory]);
 
+  const [chatRoleIndex, setChatRoleIndex] = useState(0);
+
   const modTheIndex = (index: number) => {
     return (index + sectionNumber) % sectionNumber;
   };
@@ -53,6 +60,14 @@ export default function IntroductionStory({
       );
       setCurrentSectionIndex(targetIndex);
       setPreviousSectionIndex(currentSectionIndex);
+
+      let randomIndex = Math.floor(Math.random() * 3);
+
+      while (randomIndex === chatRoleIndex) {
+        randomIndex = Math.floor(Math.random() * 3);
+      }
+
+      setChatRoleIndex(randomIndex);
 
       animationTimerRef.current = setTimeout(() => {
         setIsSwitching(false);
@@ -88,7 +103,11 @@ export default function IntroductionStory({
       </header>
 
       <section className="h-full flex justify-center items-center gap-12">
-        <img src={chatRole} alt="" className={'w-[30%] h-fit'} />
+        <img
+          src={chatRoleList[chatRoleIndex]}
+          alt=""
+          className={'w-[30%] h-fit'}
+        />
 
         <div className={`${style['introduction-card-wrapper']} w-[35%] `}>
           <div className="z-[101] col-start-1 col-end-2 row-start-1 row-end-2 flex justify-start items-start mt-4 mr-8">
@@ -150,8 +169,6 @@ export default function IntroductionStory({
               <Button
                 category="green"
                 onClick={() => {
-                  console.log('开始绘画');
-                  //   setIsIntroductionStoryProcessing(false);
                   handleIntroductionStoryProcessing(false);
                 }}
               >
