@@ -759,7 +759,7 @@ export default function DrawingPage() {
                 </section>
 
                 {/* 按钮 */}
-                <section className="mt-auto flex flex-col items-end mb-3 border-t-2 border-t-blue-400">
+                <section className="mt-auto flex flex-col items-end mb-1 pt-2 pb-2 pr-2 bg-[#eee] rounded-xl">
                   <textarea
                     value={currentPaintingPrompt}
                     className="w-[55%] mb-4 h-24 p-2 rounded-lg resize-none"
@@ -797,7 +797,7 @@ export default function DrawingPage() {
 
               {/* 吉祥物 */}
               <img
-                src={chatRole}
+                src={chatRoleList[chatRoleIndex]}
                 alt="chat-role"
                 className={`${style['drawing-chatbot']}`}
               />
