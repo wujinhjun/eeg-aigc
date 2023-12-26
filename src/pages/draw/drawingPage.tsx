@@ -541,8 +541,9 @@ export default function DrawingPage() {
       try {
         const data: Array<boolean | null | number> = JSON.parse(e.data).met;
         const result = translateDataByEEG(data);
+        const targetStatusEeg = filterTargetDataByEEG(result);
 
-        console.log(result);
+        targetStatusEeg.length > 0 && setCurrentEegStatus(targetStatusEeg);
       } catch {
         console.log(e.data);
       }
