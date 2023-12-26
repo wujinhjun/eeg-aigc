@@ -13,7 +13,6 @@ import {
 import { nanoid } from 'nanoid';
 import { produce } from 'immer';
 import toast from 'react-hot-toast';
-import { useThrottleFn } from 'ahooks';
 
 import Button from '@/components/base/button';
 import Dialog from '@/components/base/dialog';
@@ -26,8 +25,6 @@ import compressImage from '@/utils/compressImage';
 import filterTargetDataByEEG from '@/utils/filterTargetDataByEEG';
 import translateDataByEEG from '@/utils/translateDataByEEG';
 import publicService from '@/service/publicService';
-
-import useResizeObserver from '@/hooks/useResizeObserver';
 
 import {
   ChatRecordType,
@@ -601,87 +598,6 @@ export default function DrawingPage() {
       left: 0
     });
   }, [chatRecordList]);
-
-  //   //   const chatRecordListAreaRef = useRef<HTMLElement | null>(null);
-  //   const scrollChatListToBottom = () => {
-  //     if (!chatRecordListAreaRef.current) {
-  //       return;
-  //     }
-
-  //     handleScrollElementToEnd(chatRecordListAreaRef.current, 'y');
-  //   };
-
-  //   const scrollJournalListToRight = () => {
-  //     if (!journalListPictureRef.current) {
-  //       return;
-  //     }
-
-  //     handleScrollElementToEnd(journalListPictureRef.current, 'x');
-  //   };
-
-  //   const { run: scrollChatListBottomThrottle } = useThrottleFn(
-  //     scrollChatListToBottom,
-  //     { wait: 1000 }
-  //   );
-
-  //   const { run: scrollJournalListToRightThrottle } = useThrottleFn(
-  //     scrollJournalListToRight,
-  //     { wait: 1000 }
-  //   );
-
-  //   const { ref: chatRecordListAreaRef, dimensions: chatArea } =
-  //     useResizeObserver<HTMLElement>();
-
-  //   useEffect(() => {
-  //     console.log(chatArea);
-
-  //     // if (!chatRecordListAreaRef.current) {
-  //     //   return;
-  //     // }
-  //     // const element = chatRecordListAreaRef.current;
-
-  //     // const { scrollHeight, clientHeight } = element;
-
-  //     // element.scrollTo({ behavior: 'smooth', top: scrollHeight, left: 0 });
-  //     // const { clientHeight, clientWidth } = chatRecordListAreaRef.current;
-  //   }, [chatArea]);
-  // scrollChatListBottomThrottle
-
-  //   const { ref: journalListPictureRef } = useResizeObserver(
-  //     scrollJournalListToRightThrottle
-  //   );
-
-  //   const handleScrollElementToEnd = (
-  //     element: HTMLElement,
-  //     direction: 'x' | 'y' | 'all'
-  //   ) => {
-  //     const options: ScrollToOptions = {
-  //       behavior: 'smooth'
-  //     };
-  //     switch (direction) {
-  //       case 'x':
-  //         options.left = element.scrollWidth;
-  //         break;
-  //       case 'y':
-  //         options.top = element.scrollHeight;
-  //         break;
-  //       case 'all':
-  //         options.left = element.scrollWidth;
-  //         options.top = element.scrollHeight;
-  //         break;
-  //       default:
-  //         break;
-  //     }
-
-  //     console.log(element, options);
-
-  //     // element.scrollTo(options);
-  //     element.scrollTo({
-  //       behavior: 'smooth',
-  //       left: element.scrollWidth,
-  //       top: element.scrollHeight
-  //     });
-  //   };
 
   // 渲染聊天记录
   const renderChatRecordCard = (item: ChatRecordType) => {
